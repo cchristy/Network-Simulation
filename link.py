@@ -36,13 +36,19 @@ class Link:
             return #return if no packet to transfer
         #otherwise transmit the packet
         #print('%s: packet "%s" length greater then link mtu (%d)' % (self, pkt_S, self.mtu))
-	#return #return without transmitting if packet too big
+	    #return #return without transmitting if packet too big
         try:
             if len(pkt_S) > self.mtu:
                 print('%s: packet length greater then link mtu (%d), splitting packet...' % (self, self.mtu))
-            dest = pkt_S[:5]
-            pkt_S = pkt_S[5:]
-            data_len = self.mtu-5
+                #split packet
+            header = pkt_S[:16]
+            dest = str(self.dst_addr).zfill(self.dst_addr_S_length)
+            byte_S += str(self.frag_flag).zfill(self.frag_flag_length)
+            byte_S += str(self.offset).zfill(self.offset_length)
+            byte_S += str(self.id).zfill(self.id_length)
+            byte_S += self.data_S
+            pkt_S = pkt_S[16:]
+            data_len = self.mtu-20
             while(len(pkt_S)):
                 self.out_intf.put(dest + pkt_S[:data_len])
                 print('%s: transmitting packet "%s"' % (self, dest + pkt_S[:data_len]))
