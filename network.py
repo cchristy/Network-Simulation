@@ -31,14 +31,27 @@ class Interface:
 # NOTE: This class will need to be extended to for the packet to include
 # the fields necessary for the completion of this assignment.
 class NetworkPacket:
-    ## packet encoding lengths 
-    dst_addr_S_length = 5
-    
+    ## packet encoding lengths
+    frag_flag_length = 1 # 1
+    dst_addr_S_length = 5 #5
+    offset_length = 5 #5
+    id_length = 5 #5
+    header_length = 16
     ##@param dst_addr: address of the destination host
     # @param data_S: packet payload
     def __init__(self, dst_addr, data_S):
         self.dst_addr = dst_addr
         self.data_S = data_S
+        self.frag_flag = 0
+        self.offset = 0
+        self.id = 0
+
+    def __init__(self, frag_flag, dst_addr, offset, id, data_S):
+        self.dst_addr = dst_addr
+        self.data_S = data_S
+        self.frag_flag = frag_flag
+        self.offset = offset
+        self.id = id
         
     ## called when printing the object
     def __str__(self):
@@ -47,6 +60,9 @@ class NetworkPacket:
     ## convert packet to a byte string for transmission over links
     def to_byte_S(self):
         byte_S = str(self.dst_addr).zfill(self.dst_addr_S_length)
+        byte_S += str(self.frag_flag).zfill(self.frag_flag_length)
+        byte_S += str(self.offset).zfill(self.offset_length)
+        byte_S += str(self.id).zfill(self.id_length)
         byte_S += self.data_S
         return byte_S
     
@@ -147,4 +163,3 @@ class Router:
             if self.stop:
                 print (threading.currentThread().getName() + ': Ending')
                 return
-           
