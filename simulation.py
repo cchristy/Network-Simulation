@@ -27,6 +27,11 @@ if __name__ == '__main__':
     link_layer = link.LinkLayer()
     object_L.append(link_layer)
     
+    #create links
+    #Link CR = link.Link(client, 0, router_a, 0, 50)
+    #Link RC = link.Link(router_a, 0, server, 0, 50)
+    #linklist = [CR, RC]
+	
     #add all the links
     link_layer.add_link(link.Link(client, 0, router_a, 0, 50))
     link_layer.add_link(link.Link(router_a, 0, server, 0, 30))
@@ -45,8 +50,12 @@ if __name__ == '__main__':
     
     
     #create some send events
-    message = 'hi 0123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051'
-    
+    message = 'Horatio says tis but our fantasy, ' \
+              'And will not let belief take hold of him'\
+              'Touching this dreaded sight, twice seen of us:' \
+              'Therefore I have entreated him along'
+
+
     #for i in range(3):
     client.udt_send(2, message)
     

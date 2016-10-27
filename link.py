@@ -24,6 +24,9 @@ class Link:
         self.in_intf = from_node.out_intf_L[from_intf_num]
         self.out_intf = to_node.in_intf_L[to_intf_num]
         self.mtu = mtu
+        #get mtu information onto the interface
+        self.in_intf.mtu = mtu
+        self.out_intf.mtu = mtu
         
     ## called when printing the object
     def __str__(self):
@@ -34,20 +37,13 @@ class Link:
         pkt_S = self.in_intf.get()
         if pkt_S is None:
             return #return if no packet to transfer
+        if len(pkt_S) > self.mtu:
+            print('%s: packet "%s" length greater then link mtu (%d)' % (self, pkt_S, self.mtu))
+            #return #return without transmitting if packet too big
         #otherwise transmit the packet
-        #print('%s: packet "%s" length greater then link mtu (%d)' % (self, pkt_S, self.mtu))
-	#return #return without transmitting if packet too big
         try:
-            if len(pkt_S) > self.mtu:
-                print('%s: packet length greater then link mtu (%d), splitting packet...' % (self, self.mtu))
-            dest = pkt_S[:5]
-            pkt_S = pkt_S[5:]
-            data_len = self.mtu-5
-            while(len(pkt_S)):
-                self.out_intf.put(dest + pkt_S[:data_len])
-                print('%s: transmitting packet "%s"' % (self, dest + pkt_S[:data_len]))
-                pkt_S = pkt_S[data_len:]
-	
+            self.out_intf.put(pkt_S)
+            print('%s: transmitting packet "%s"' % (self, pkt_S))
         except queue.Full:
             print('%s: packet lost' % (self))
             pass
